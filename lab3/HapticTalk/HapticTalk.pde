@@ -89,6 +89,7 @@ FBox              f1;
 
 /* define goalie variables */
 FBox              g1;
+FBox              g2;
 FPrismaticJoint   p1;
 boolean           upOrDown                            = false;
 float             gTime;
@@ -178,23 +179,30 @@ void setup(){
   
   
   /* Water Bucket */
-  // f1                  = new FBox(4.75, 2);
-  // f1.setPosition(15.125, 8.25);
-  // f1.setFill(150, 150, 255, 80);
-  // f1.setDensity(50);
-  // f1.setSensor(true);
-  // f1.setNoStroke();
-  // f1.setStatic(true);
-  // f1.setName("Water");
-  // world.add(f1);
+   f1                  = new FBox(worldWidth/3 -1, 8);
+   f1.setPosition(worldWidth/3 + worldWidth/(3*2), 7);
+   f1.setFill(150, 150, 255, 80);
+   f1.setDensity(5);
+   f1.setSensor(true);
+   f1.setNoStroke();
+   f1.setStatic(true);
+   world.add(f1);
   
   
   /* Goalie box definition */
-  // g1                  = new FBox(1, 2);
-  // g1.setFill(150, 0, 0);
-  // g1.setPosition(18, 1.5);
-  // g1.setDensity(40);
-  // world.add(g1);
+  g1                  = new FBox(2, 5);
+  g1.setFill(150, 0, 0);
+  g1.setPosition(2*worldWidth/3 + 0.5 + 0.5*2, 5 + 1.5);
+  g1.setDensity(10);
+  g1.setStatic(false);
+  world.add(g1);
+
+  g2                  = new FBox(2, 5);
+  g2.setFill(150, 0, 0);
+  g2.setPosition(worldWidth - 0.5*2 - 0.75, 5 + 1.5);
+  g2.setDensity(10);
+  g2.setStatic(false);
+  world.add(g2);
   // p1 = new FPrismaticJoint(g1, b2);
   // p1.setNoStroke();
   // world.add(p1);
@@ -204,8 +212,9 @@ void setup(){
   
   /* Haptic Tool Initialization */
   s                   = new HVirtualCoupling((0.25)); 
-  s.h_avatar.setDensity(7);
+  s.h_avatar.setDensity(10);
   s.h_avatar.setFill(255,0,0); 
+  //s.h_avatar.setSensor(true);
   s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2);
   
   //h1                  = new FCircle(0.75);
@@ -246,19 +255,21 @@ void draw(){
 
   checkRegion();
   println(region);
-  // gTime = millis();
-  // if (gTime - gTimeLast > gTimeLimit){
-  //   if (abs(g1.getVelocityY())      <5){
-  //     upOrDown =! upOrDown;
-  //     gTimeLast = gTime;
-  //   }
-  // }
-  // if(upOrDown == false){
-  //   g1.setVelocity(0,5);
-  // }
-  // else{
-  //   g1.setVelocity(0,-5);
-  // }
+  gTime = millis();
+  if (gTime - gTimeLast > gTimeLimit){
+    if (abs(g1.getVelocityX())      < 5){
+      upOrDown =! upOrDown;
+      gTimeLast = gTime;
+    }
+  }
+  if(upOrDown == false){
+    g1.setVelocity(5,0);
+    g2.setVelocity(-5,0);
+  }
+  else{
+    g1.setVelocity(-5,0);
+    g2.setVelocity(5,0);
+  }
   
   theta += 0.01;
   radius = cos(theta); 
@@ -285,38 +296,41 @@ class SimulationThread implements Runnable{
       pos_ee.set(widgetOne.get_device_position(angles.array()));
       pos_ee.set(pos_ee.copy().mult(200));  
     }
+    
 
 
     if(region == 0){
 
       pos_ee.add(getRandomVector(1));
 
-
-
     } else if(region == 1){
-      // var v = PVector.fromAngle(theta);
-      // v.setMag(radius*5);
-      // float mag = pos_ee.mag();
-      // pos_ee.add(v);
-      //pos_ee.setMag(mag);
-      //println(v);
-      //s.setToolPosition(edgeTopLeftX+worldWidth/2-(pos_ee).x+2, edgeTopLeftY+(pos_ee).y-7 + v.y);
-    } else if (region ==2){
         var y = radius*cos(theta);
-        var v = new PVector(0.0, y);
+        var x = radius*sin(theta);
+        var v = new PVector(x, y);
         pos_ee.add(v);
-
+    } else if (region == 2){
+        var y = radius*cos(theta*10)*2;
+        var v = new PVector(0, y);
+        //pos_ee.add(v);
     }
     
     s.setToolPosition(edgeTopLeftX+worldWidth/2-(pos_ee).x+2, edgeTopLeftY+(pos_ee).y-7); 
     s.updateCouplingForce();
     f_ee.set(-s.getVCforceX(), s.getVCforceY());
  
+    println(s.getVCforceY());
     f_ee.div(20000); //
     torques.set(widgetOne.set_device_torques(f_ee.array()));
     widgetOne.device_write_torques();
   
     //h1.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
+
+    if (s.h_avatar.isTouchingBody(f1)){
+      s.h_avatar.setDamping(700);
+    }
+    else{
+      s.h_avatar.setDamping(40); 
+    }
  
   
     world.step(1.0f/1000.0f);
