@@ -211,10 +211,10 @@ void setup(){
 
   
   /* Haptic Tool Initialization */
-  s                   = new HVirtualCoupling((1.0)); 
+  s                   = new HVirtualCoupling((0.25)); 
   s.h_avatar.setDensity(10);
-  s.h_avatar.setStroke(0); 
-  s.h_avatar.setFill(255,255,255); 
+  s.h_avatar.setStroke(0);
+  s.h_avatar.setFill(255,255,255);
   //s.h_avatar.setSensor(true);
   s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2);
   
@@ -303,21 +303,19 @@ class SimulationThread implements Runnable{
     if(region == 0){
 
       pos_ee.add(getRandomVector(1));
-      s.h_avatar.setFill(255, 255, 0); 
+      s.h_avatar.setFill(255,255,0); // yellow
 
     } else if(region == 1){
         var y = radius*cos(theta);
         var x = radius*sin(theta);
         var v = new PVector(x, y);
         pos_ee.add(v);
-        s.h_avatar.setFill(150, 150, 255, 180);
+        s.h_avatar.setFill(150, 150, 255, 40); // blueish
     } else if (region == 2){
         var y = radius*cos(theta*10)*2;
         var v = new PVector(0, y);
-        s.h_avatar.setFill(255, 0, 0, 125); 
         //pos_ee.add(v);
-    }else{
-      s.h_avatar.setFill(255);
+        s.h_avatar.setFill(255,0,0, 125); // red
     }
     
     s.setToolPosition(edgeTopLeftX+worldWidth/2-(pos_ee).x+2, edgeTopLeftY+(pos_ee).y-7); 
@@ -338,9 +336,12 @@ class SimulationThread implements Runnable{
       s.h_avatar.setDamping(40); 
     }
     
+    
     if (s.h_avatar.isTouchingBody(g1) || s.h_avatar.isTouchingBody(g2)){
-      s.h_avatar.setFill(255, 0, 0, 255); 
+      
+      
     }
+
  
   
     world.step(1.0f/1000.0f);
