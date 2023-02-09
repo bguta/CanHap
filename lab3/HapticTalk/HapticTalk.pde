@@ -179,9 +179,10 @@ void setup(){
   
   
   /* Water Bucket */
-   f1                  = new FBox(worldWidth/3 -1, 8);
-   f1.setPosition(worldWidth/3 + worldWidth/(3*2), 7);
-   f1.setFill(150, 150, 255, 80);
+   f1                  = new FBox(worldWidth/3 -1, 6.3);
+   f1.setPosition(worldWidth/3 + worldWidth/(3*2), 6.1);
+   //f1.setFill(150, 150, 255, 80);
+   f1.setFill(255);
    f1.setDensity(5);
    f1.setSensor(true);
    f1.setNoStroke();
@@ -191,14 +192,18 @@ void setup(){
   
   /* Goalie box definition */
   g1                  = new FBox(2, 5);
-  g1.setFill(150, 0, 0);
+  //g1.setFill(150, 0, 0);
+  g1.setFill(255);
+  g1.setNoStroke();
   g1.setPosition(2*worldWidth/3 + 0.5 + 0.5*2, 5 + 1.5);
   g1.setDensity(10);
   g1.setStatic(false);
   world.add(g1);
 
   g2                  = new FBox(2, 5);
-  g2.setFill(150, 0, 0);
+  //g2.setFill(150, 0, 0);
+  g2.setFill(255);
+  g2.setNoStroke();
   g2.setPosition(worldWidth - 0.5*2 - 0.75, 5 + 1.5);
   g2.setDensity(10);
   g2.setStatic(false);
@@ -255,7 +260,6 @@ void draw(){
   
 
   checkRegion();
-  println(region);
   gTime = millis();
   if (gTime - gTimeLast > gTimeLimit){
     if (abs(g1.getVelocityX())      < 5){
@@ -303,19 +307,16 @@ class SimulationThread implements Runnable{
     if(region == 0){
 
       pos_ee.add(getRandomVector(1));
-      s.h_avatar.setFill(255, 255, 0); 
+      //s.h_avatar.setFill(255, 255, 0); 
 
     } else if(region == 1){
         var y = radius*cos(theta);
         var x = radius*sin(theta);
         var v = new PVector(x, y);
         pos_ee.add(v);
-        s.h_avatar.setFill(150, 150, 255, 180);
+        //s.h_avatar.setFill(150, 150, 255, 180);
     } else if (region == 2){
-        var y = radius*cos(theta*10)*2;
-        var v = new PVector(0, y);
-        s.h_avatar.setFill(255, 0, 0, 125); 
-        //pos_ee.add(v);
+        //s.h_avatar.setFill(255, 0, 0, 125); 
     }else{
       s.h_avatar.setFill(255);
     }
@@ -324,7 +325,6 @@ class SimulationThread implements Runnable{
     s.updateCouplingForce();
     f_ee.set(-s.getVCforceX(), s.getVCforceY());
  
-    println(s.getVCforceY());
     f_ee.div(20000); //
     torques.set(widgetOne.set_device_torques(f_ee.array()));
     widgetOne.device_write_torques();
@@ -339,7 +339,7 @@ class SimulationThread implements Runnable{
     }
     
     if (s.h_avatar.isTouchingBody(g1) || s.h_avatar.isTouchingBody(g2)){
-      s.h_avatar.setFill(255, 0, 0, 255); 
+      //s.h_avatar.setFill(255, 0, 0, 255); 
     }
  
   
