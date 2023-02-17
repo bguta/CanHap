@@ -111,7 +111,7 @@ float xr = 0;
 float yr = 0;
 
 // circle stuff
-float radius = 0.5;
+float radius = 0.4;
 float theta = 0.0;
 float xOffset = 0.0;
 float yOffset = 0.0;
@@ -272,9 +272,9 @@ void setup(){
 
 
   // set values for PID
-    P = 0.10;
-    D = 0.42;
-    I = 0.11;
+    P = 0.07;
+    D = 0.42;//0.42;
+    I = 0.3;
   
   /* setup simulation thread to run at 1kHz */ 
   thread("SimulationThread");
@@ -362,10 +362,6 @@ void draw(){
     background(255); 
     update_animation(angles.x*radsPerDegree, angles.y*radsPerDegree, posEE.x, posEE.y);
     
-      CirclePosition(theta, radius, xOffset, yOffset);
-      theta += 0.01;
-      looptime = int(random(250, 300));
-    
   }
 }
 /* end draw section ****************************************************************************************************/
@@ -410,8 +406,11 @@ while(1==1) {
       // adjust xr and yr
 
 
+      CirclePosition(theta, radius, xOffset, yOffset);
+      theta += 0.001;
+
       x_m = xr*300; 
-      y_m = yr*300+350;//mouseY;
+      y_m = yr*300+400;//mouseY;
       
  // Torques from difference in endeffector and setpoint, set gain, calculate force
       float xE = pixelsPerMeter * posEE.x;
