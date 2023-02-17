@@ -11,11 +11,15 @@ public class GearShifter{
 
     float slotE_W2 = 0.15 - slotA_W;
 
-    float xa = 0.5, ya = 0.15; // coordinate for A
+    float xa = 0.5-0.45/2, ya = 0.15; // coordinate for A
     float yb = 0.05; // y coordinate for B
 
     float yaa = 1 - ya;
     float ybb = 1 - yb;
+
+    float scale = 1.0;
+    FWorld world;
+    FLine myLine;
 
 
 
@@ -65,13 +69,16 @@ public class GearShifter{
     };
 
     // constructor
-    public GearShifter(int w, int h){
+    public GearShifter(int w, int h, FWorld world, float pixelsPerCm){
         this.w = w - 1;
         this.h = h - 1;
+
+        this.world = world;
+        this.scale = 1.0/pixelsPerCm;
     }
 
 
-    public void show(){
+    public void draw(){
         noFill();
         stroke(0);
 
@@ -112,6 +119,14 @@ public class GearShifter{
         line(this.w * topCoords[0], this.h * topCoords[1], this.w * bottomCoords[0], this.h * bottomCoords[1]);
         line(this.w * topCoords[topCoords.length - 2], this.h * topCoords[topCoords.length - 1], this.w * bottomCoords[bottomCoords.length - 2], this.h * bottomCoords[bottomCoords.length - 1]);
 
+
+
+        FLine leftLine = new FLine(this.scale * this.w * topCoords[0], this.scale * this.h * topCoords[1], this.scale * this.w * bottomCoords[0], this.scale * this.h * bottomCoords[1]);
+        FLine rightLine = new FLine(this.scale * this.w * topCoords[topCoords.length - 2], this.scale * this.h * topCoords[topCoords.length - 1],
+        this.scale * this.w * bottomCoords[bottomCoords.length - 2], this.scale * this.h * bottomCoords[bottomCoords.length - 1]);
+
+        this.world.add(leftLine);
+        this.world.add(rightLine);
 
         fill(255, 0, 0);
         noStroke();

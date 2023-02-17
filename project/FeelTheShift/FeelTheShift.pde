@@ -45,10 +45,15 @@ PVector           torques                             = new PVector(0, 0);
 PVector           pos_ee                              = new PVector(0, 0);
 PVector           f_ee                                = new PVector(0, 0); 
 
+/* world size in pixels */
+int w = 1000;
+int h = 400;
+
+
 /* World boundaries in centimeters*/
 FWorld            world;
-float             worldWidth                          = 25.0;  
-float             worldHeight                         = 10.0;
+float             worldWidth                          = w/pixelsPerCentimeter;  
+float             worldHeight                         = h/pixelsPerCentimeter;
 
 float             edgeTopLeftX                        = 0.0; 
 float             edgeTopLeftY                        = 0.0; 
@@ -85,7 +90,6 @@ void setup(){
   
   /* screen size definition */
   size(1000, 400);
-  mechanisim = new GearShifter(1000, 400);
   /* device setup */
   
   /**  
@@ -121,28 +125,32 @@ void setup(){
   hAPI_Fisica.init(this); 
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
   world               = new FWorld();
+
+  mechanisim = new GearShifter(1000, 400, world, pixelsPerCentimeter);
   
   
   
 
   
   /* Haptic Tool Initialization */
-  s                   = new HVirtualCoupling((1.0)); 
+  s                   = new HVirtualCoupling((2.0)); 
   s.h_avatar.setDensity(10);
   s.h_avatar.setStroke(0); 
-  s.h_avatar.setFill(255,255,255); 
+  s.h_avatar.setFill(0); 
   //s.h_avatar.setSensor(true);
-  s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2);
+  s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
   
   
   
   /* world conditions setup */ 
   world.setGravity((0.0), (300.0)); //1000 cm/(s^2)
-  world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
+  //world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
   world.setEdgesRestitution(.4);
   world.setEdgesFriction(0.5);
   
-  //world.draw();
+  world.draw();
+
+  mechanisim.draw();
   
   
   /* setup framerate speed */
@@ -161,11 +169,10 @@ void setup(){
 void draw(){
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   background(255);
-  
-  mechanisim.show();
-  //world.draw();  
+  world.draw();  
 }
 /* end draw section ****************************************************************************************************/
+
 
 
 
